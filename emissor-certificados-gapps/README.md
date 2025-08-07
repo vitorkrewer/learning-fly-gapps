@@ -1,7 +1,6 @@
 # Emissor e Gerenciador de Certificados com Google Apps Script
 
 ![Status](https://img.shields.io/badge/status-funcional-brightgreen)
-![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)
 
 Um sistema completo e de baixo custo para automatizar a criação, emissão e gestão de certificados digitais. A ferramenta utiliza o poder do ecossistema Google, usando o Google Sheets como banco de dados, Google Docs como templates e Google Drive para armazenamento.
 
