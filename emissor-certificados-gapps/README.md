@@ -95,16 +95,6 @@ Siga estes passos para ter sua própria cópia da ferramenta funcionando:
    - Clique em qualquer opção do menu pela primeira vez. O Google solicitará autorização para o script rodar. Siga os passos e permita o acesso.
    - Pronto! A ferramenta está pronta para ser usada. Consulte o menu `Ajuda e Instruções` para um guia detalhado de uso.
 
-## 🤝 Como Contribuir
-
-Contribuições são bem-vindas! Se você tem ideias para novas funcionalidades ou encontrou um bug, siga os passos:
-
-1.  Faça um "Fork" deste repositório.
-2.  Crie uma nova "Branch" (`git checkout -b feature/sua-feature`).
-3.  Faça suas alterações e "Commit" (`git commit -m 'Adiciona nova feature'`).
-4.  Envie para a sua "Branch" (`git push origin feature/sua-feature`).
-5.  Abra um "Pull Request".
-
 ## 📄 Licença
 
 Este projeto está licenciado sob os termos da [Creative Commons Atribuição-NãoComercial 4.0 Internacional (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/).
