@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { padding: 20px; background-color: #f8f9fa; }
+        .card-header { background-color: #ff8f00; color: white; }
+        #loader { display: none; }
+        #config-details, #result-area { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h5>Emitir a partir de Lote Salvo</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="configSelect">Selecione uma Configuração de Emissão</label>
+                    <select class="form-control" id="configSelect">
+                        <option value="" disabled selected>Carregando configurações...</option>
+                    </select>
+                </div>
+
+                <div id="config-details" class="card bg-light p-3 mb-3">
+                    <h6>Detalhes do Lote:</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><strong>Parceiro:</strong> <span id="detail-parceiro"></span></li>
+                        <li><strong>Evento:</strong> <span id="detail-evento"></span></li>
+                        <li><strong>ID da Configuração:</strong> <span id="detail-configid"></span></li>
+                    </ul>
+                </div>
+
+                <button id="emitirLoteBtn" class="btn btn-warning btn-block" disabled>Carregar Participantes e Emitir Pendentes</button>
+            </div>
+        </div>
+
+        <div id="result-area" class="alert mt-4"></div>
+        <div id="loader" class="text-center mt-3">
+            <div class="spinner-border text-warning" role="status">
+                <span class="sr-only">Processando...</span>
+            </div>
+            <p>Processando emissões... Isso pode levar vários minutos.</p>
+        </div>
+    </div>
+
+<script>
+    let configsSalvas = [];
+
+    window.addEventListener('load', carregarConfigs);
+
+    function carregarConfigs() {
+        google.script.run
+            .withSuccessHandler(onConfigsCarregadas)
+            .withFailureHandler(onFailure)
+            .buscarConfigsSalvas();
+    }
+
+    function onConfigsCarregadas(response) {
+        const result = JSON.parse(response);
+        const select = document.getElementById('configSelect');
+
+        if (result.success && result.data.length > 0) {
+            configsSalvas = result.data;
+            select.innerHTML = '<option value="" disabled selected>Selecione um lote de emissão</option>';
+            configsSalvas.forEach(config => {
+                const option = document.createElement('option');
+                option.value = config.ConfigID;
+                const dataFormatada = new Date(config.DataCriacao).toLocaleDateString('pt-BR');
+                option.textContent = `${config.nomeParceiro} - ${config.NomeEvento} (Criado em ${dataFormatada})`;
+                select.appendChild(option);
+            });
+        } else {
+            select.innerHTML = '<option value="" disabled selected>Nenhuma configuração salva encontrada.</option>';
+            if (!result.success) onFailure(result);
+        }
+    }
+
+    document.getElementById('configSelect').addEventListener('change', function(e) {
+        const selectedId = e.target.value;
+        const selectedConfig = configsSalvas.find(c => c.ConfigID === selectedId);
+        const detailsDiv = document.getElementById('config-details');
+        
+        if (selectedConfig) {
+            document.getElementById('detail-parceiro').textContent = selectedConfig.nomeParceiro;
+            document.getElementById('detail-evento').textContent = selectedConfig.NomeEvento;
+            document.getElementById('detail-configid').textContent = selectedConfig.ConfigID;
+            detailsDiv.style.display = 'block';
+            document.getElementById('emitirLoteBtn').disabled = false;
+        } else {
+            detailsDiv.style.display = 'none';
+            document.getElementById('emitirLoteBtn').disabled = true;
+        }
+    });
+
+    document.getElementById('emitirLoteBtn').addEventListener('click', function() {
+        const selectedId = document.getElementById('configSelect').value;
+        if (!selectedId) {
+            alert('Por favor, selecione um lote.');
+            return;
+        }
+        showLoader(true);
+        google.script.run
+            .withSuccessHandler(onEmissionComplete)
+            .withFailureHandler(onFailure)
+            .emitirCertificadosLoteSalvo(selectedId);
+    });
+
+    function onEmissionComplete(response) {
+        showLoader(false);
+        const result = JSON.parse(response);
+        const resultArea = document.getElementById('result-area');
+        
+        if (result.success) {
+            resultArea.className = 'alert alert-success';
+        } else {
+            resultArea.className = 'alert alert-danger';
+        }
+        
+        let messageHtml = `<h4>${result.message}</h4>`;
+        if (result.details && result.details.length > 0) {
+          messageHtml += '<p>Detalhes:</p><ul>';
+          result.details.forEach(det => { messageHtml += `<li>${det}</li>`; });
+          messageHtml += '</ul>';
+        }
+
+        resultArea.innerHTML = messageHtml;
+        resultArea.style.display = 'block';
+    }
+
+    function onFailure(error) {
+        showLoader(false);
+        const resultArea = document.getElementById('result-area');
+        resultArea.className = 'alert alert-danger';
+        resultArea.textContent = 'Ocorreu um erro: ' + error.message;
+        resultArea.style.display = 'block';
+    }
+    
+    function showLoader(show) {
+        document.getElementById('loader').style.display = show ? 'block' : 'none';
+        document.getElementById('emitirLoteBtn').disabled = show;
+    }
+</script>
+</body>
+</html>

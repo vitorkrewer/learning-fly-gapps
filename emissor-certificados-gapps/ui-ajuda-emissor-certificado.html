@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { padding: 25px; background-color: #f8f9fa; }
+        .card-header { font-weight: bold; }
+        .table th { background-color: #e9ecef; }
+        .alert-warning { border-left: 5px solid #ffc107; }
+        code { background-color: #e3e6e8; padding: 2px 5px; border-radius: 4px; }
+        .badge { font-size: 100%; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-primary">Guia de Ajuda do Emissor de Certificados</h3>
+            <button class="btn btn-sm btn-outline-secondary" onclick="google.script.host.close()">Fechar</button>
+        </div>
+
+        <div class="accordion" id="ajudaAccordion">
+
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne">
+                            1. Configuração Inicial e Estrutura das Planilhas
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseOne" class="collapse show" data-parent="#ajudaAccordion">
+                    <div class="card-body">
+                        <p>Para o correto funcionamento da ferramenta, a planilha principal precisa conter 4 abas específicas. A maioria delas é preenchida automaticamente pelo sistema.</p>
+                        <ul>
+                            <li><code>Cadastro.Instituicoes</code>: Aqui você deve cadastrar os parceiros antes de iniciar uma emissão.</li>
+                            <li><code>Config.Salvas</code>: Armazena o histórico de cada lote de emissão. (Preenchimento automático)</li>
+                            <li><code>CertificadosEmitidos</code>: Grava um registro para cada certificado gerado. (Preenchimento automático)</li>
+                            <li><code>Logs.Atividades</code>: Registra as ações e erros do sistema. (Preenchimento automático)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                     <h5 class="mb-0">
+                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo">
+                            2. Padrão da Planilha de Participantes
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseTwo" class="collapse" data-parent="#ajudaAccordion">
+                    <div class="card-body">
+                        <p>Esta é a planilha mais importante que você irá criar manualmente para cada evento. Você precisa obter o ID dela para informar no formulário de emissão.</p>
+                        <div class="alert alert-warning">
+                            <strong>Atenção!</strong> Os nomes das colunas devem ser **exatamente** como descrito abaixo, incluindo maiúsculas e minúsculas.
+                        </div>
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Nome da Coluna</th>
+                                    <th>Obrigatório?</th>
+                                    <th>Descrição</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>NomeParticipante</code></td>
+                                    <td><span class="badge badge-success">Sim</span></td>
+                                    <td>Nome completo do participante que aparecerá no certificado.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>EmailParticipante</code></td>
+                                    <td><span class="badge badge-success">Sim</span></td>
+                                    <td>E-mail do participante. Atualmente usado para registro (futuramente para envio).</td>
+                                </tr>
+                                <tr>
+                                    <td><code>StatusEmissao</code></td>
+                                    <td><span class="badge badge-success">Sim</span></td>
+                                    <td>Deve existir, mas pode ser deixada em branco. O sistema irá preencher com "Emitido com Sucesso" ou com uma mensagem de falha.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>CPF</code></td>
+                                    <td><span class="badge badge-info">Opcional</span></td>
+                                    <td>Se esta coluna existir, o CPF será inserido no template onde houver a tag <code>{{CPF}}</code>.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>idParceiro</code>, <code>nomeParceiro</code>, <code>NomeEvento</code>, <code>DataEvento</code></td>
+                                    <td><span class="badge badge-secondary">Automático</span></td>
+                                    <td>Estas colunas podem existir, mas serão preenchidas ou sobrescritas automaticamente pelo sistema durante a emissão para garantir a consistência dos dados.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" id="headingThree">
+                     <h5 class="mb-0">
+                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree">
+                            3. Preparando o Template no Google Docs
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseThree" class="collapse" data-parent="#ajudaAccordion">
+                    <div class="card-body">
+                        <p>Crie um modelo de certificado no Google Docs. Nos locais onde os dados dinâmicos devem entrar, utilize as seguintes "tags":</p>
+                        <ul>
+                            <li><code>{{NOME_PARTICIPANTE}}</code> - Será substituído pelo nome completo do participante.</li>
+                            <li><code>{{NOME_EVENTO}}</code> - Nome do evento configurado no lote de emissão.</li>
+                            <li><code>{{DATA_EVENTO}}</code> - Data do evento formatada (dd/mm/aaaa).</li>
+                            <li><code>{{MENSAGEM_CORPO}}</code> - Texto personalizado do corpo do certificado.</li>
+                            <li><code>{{CPF}}</code> - CPF do participante (se a coluna existir na planilha).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+             <div class="card">
+                <div class="card-header" id="headingFour">
+                     <h5 class="mb-0">
+                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour">
+                            4. Passo a Passo de Uso
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseFour" class="collapse" data-parent="#ajudaAccordion">
+                    <div class="card-body">
+                        <ol>
+                            <li><strong>Cadastre os Parceiros:</strong> Antes de tudo, vá em <code>Gestão de Parceiros > Cadastrar Novo Parceiro</code> e adicione as instituições.</li>
+                            <li><strong>Prepare seus Arquivos:</strong> Tenha em mãos a sua Planilha de Participantes e o seu Template do Google Docs. Copie os IDs de ambos.</li>
+                            <li><strong>Inicie uma Emissão:</strong>
+                                <ul>
+                                    <li>Para um novo evento, use <code>1. Emissão Simples (Novo Lote)</code>. Preencha todos os campos, incluindo a seleção do parceiro e os IDs que você copiou.</li>
+                                    <li>Para reemitir certificados pendentes de um evento já configurado, use <code>2. Emitir de Lote Salvo</code> e selecione o lote desejado na lista.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Execute e Verifique:</strong> Siga os passos na tela. Ao final, verifique a pasta de destino no Google Drive e a aba <code>CertificadosEmitidos</code> na sua planilha.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

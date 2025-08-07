@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { padding: 20px; background-color: #f8f9fa; }
+        .card-header { background-color: #1a73e8; color: white; }
+        #loader { display: none; }
+        .btn-primary { background-color: #1a73e8; border-color: #1a73e8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h5>📝 Cadastro de Nova Instituição Parceira</h5>
+            </div>
+            <div class="card-body">
+                <form id="parceiroForm">
+                    <div class="form-group">
+                        <label for="idParceiro">ID Único do Parceiro (Ex: NOME-UF)</label>
+                        <input type="text" class="form-control" id="idParceiro" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nomeInstituicao">Nome da Instituição</label>
+                        <input type="text" class="form-control" id="nomeInstituicao" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="responsavel">Nome do Responsável (Opcional)</label>
+                        <input type="text" class="form-control" id="responsavel">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="emailContato">Email de Contato (Opcional)</label>
+                            <input type="email" class="form-control" id="emailContato">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="telefone">Telefone (Opcional)</label>
+                            <input type="text" class="form-control" id="telefone">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <span id="loader" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Salvar Parceiro
+                    </button>
+                </form>
+                <div id="status" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.getElementById('parceiroForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('loader').style.display = 'inline-block';
+
+        const parceiro = {
+            idParceiro: document.getElementById('idParceiro').value.trim(),
+            nomeInstituicao: document.getElementById('nomeInstituicao').value.trim(),
+            responsavel: document.getElementById('responsavel').value.trim(),
+            emailContato: document.getElementById('emailContato').value.trim(),
+            telefone: document.getElementById('telefone').value.trim(),
+        };
+
+        google.script.run
+            .withSuccessHandler(onSaveSuccess)
+            .withFailureHandler(onSaveFailure)
+            .salvarParceiro(parceiro);
+    });
+
+    function onSaveSuccess(response) {
+        document.getElementById('loader').style.display = 'none';
+        const statusDiv = document.getElementById('status');
+        const result = JSON.parse(response);
+
+        if (result.success) {
+            statusDiv.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
+            document.getElementById('parceiroForm').reset();
+        } else {
+            statusDiv.innerHTML = `<div class="alert alert-danger">${result.message}</div>`;
+        }
+    }
+
+    function onSaveFailure(error) {
+        document.getElementById('loader').style.display = 'none';
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerHTML = `<div class="alert alert-danger">Erro inesperado: ${error.message}</div>`;
+    }
+</script>
+</body>
+</html>

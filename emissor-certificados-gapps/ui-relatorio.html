@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { padding: 20px; }
+        .card-header { background-color: #0d652d; color: white; }
+        #loader { display: none; }
+        .stats-card { max-height: 200px; overflow-y: auto; }
+        #report-results { display: none; }
+        #export-buttons { display: none; }
+        #text-export-area { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card mb-4">
+            <div class="card-header">Filtros do Relatório</div>
+            <div class="card-body">
+                <div class="form-row align-items-end">
+                    <div class="form-group col-md-5">
+                        <label for="dataInicio">Data de Início</label>
+                        <input type="date" class="form-control" id="dataInicio">
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label for="dataFim">Data de Fim</label>
+                        <input type="date" class="form-control" id="dataFim">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <button id="gerarRelatorioBtn" class="btn btn-success btn-block">
+                            <span id="loader" class="spinner-border spinner-border-sm"></span>
+                            Gerar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="report-results">
+            <h4 class="mb-3" id="total-gerado"></h4>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">Por Parceiro</div>
+                        <ul class="list-group list-group-flush stats-card" id="stats-parceiro"></ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">Por Evento</div>
+                        <ul class="list-group list-group-flush stats-card" id="stats-evento"></ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">Por Participante</div>
+                        <ul class="list-group list-group-flush stats-card" id="stats-participante"></ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="export-buttons" class="mt-4 text-center">
+                <button id="exportPlanilha" class="btn btn-info">Exportar para Planilha Google</button>
+            </div>
+            <div id="export-link" class="mt-3"></div>
+        </div>
+    </div>
+
+<script>
+    let dadosParaExportar = [];
+
+    document.getElementById('gerarRelatorioBtn').addEventListener('click', function() {
+        showLoader(true);
+        document.getElementById('export-link').innerHTML = ''; // Limpa link antigo
+        const filtros = {
+            dataInicio: document.getElementById('dataInicio').value,
+            dataFim: document.getElementById('dataFim').value,
+        };
+        google.script.run
+            .withSuccessHandler(onRelatorioRecebido)
+            .withFailureHandler(onFailure)
+            .buscarDadosRelatorio(filtros);
+    });
+
+    document.getElementById('exportPlanilha').addEventListener('click', function() {
+        if (dadosParaExportar.length > 1) { // > 1 para garantir que há dados além do cabeçalho
+            showLoader(true, 'Exportando para Planilha...');
+            google.script.run
+                .withSuccessHandler(onPlanilhaExportada)
+                .withFailureHandler(onFailure)
+                .exportarParaPlanilha(dadosParaExportar);
+        } else {
+            alert('Não há dados para exportar.');
+        }
+    });
+
+    function onRelatorioRecebido(response) {
+        showLoader(false);
+        const result = JSON.parse(response);
+        if (!result.success) {
+            onFailure(result);
+            return;
+        }
+
+        dadosParaExportar = result.dadosParaExportar || [];
+        const stats = result.stats;
+
+        document.getElementById('total-gerado').textContent = `Total de Certificados Emitidos no Período: ${stats.total}`;
+        
+        preencherLista('stats-parceiro', stats.porParceiro);
+        preencherLista('stats-evento', stats.porEvento);
+        preencherLista('stats-participante', stats.porParticipante);
+
+        document.getElementById('report-results').style.display = 'block';
+        document.getElementById('export-buttons').style.display = 'block';
+    }
+
+    function onPlanilhaExportada(response) {
+        showLoader(false);
+        const result = JSON.parse(response);
+        if (result.success) {
+            const linkDiv = document.getElementById('export-link');
+            linkDiv.innerHTML = `<div class="alert alert-success mt-3">Relatório exportado com sucesso! <a href="${result.url}" target="_blank" rel="noopener noreferrer">Abrir Planilha</a></div>`;
+        } else {
+            onFailure(result);
+        }
+    }
+
+    function preencherLista(elementId, dados) {
+        const ul = document.getElementById(elementId);
+        ul.innerHTML = '';
+        const sortedEntries = Object.entries(dados).sort((a, b) => b[1] - a[1]); // Ordena do maior para o menor
+
+        if (sortedEntries.length === 0) {
+            ul.innerHTML = '<li class="list-group-item">Nenhum dado encontrado.</li>';
+            return;
+        }
+
+        for (const [key, value] of sortedEntries) {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.textContent = key;
+            const span = document.createElement('span');
+            span.className = 'badge badge-primary badge-pill';
+            span.textContent = value;
+            li.appendChild(span);
+            ul.appendChild(li);
+        }
+    }
+
+    function onFailure(error) {
+        showLoader(false);
+        alert('Ocorreu um erro: ' + error.message);
+    }
+
+    function showLoader(show, text = '') {
+        const btn = document.getElementById('gerarRelatorioBtn');
+        const loader = document.getElementById('loader');
+        if (show) {
+            btn.disabled = true;
+            loader.style.display = 'inline-block';
+        } else {
+            btn.disabled = false;
+            loader.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>
