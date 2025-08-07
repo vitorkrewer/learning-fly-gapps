@@ -14,7 +14,8 @@
 
 LearningFly é uma aplicação web criada com Google Apps Script para facilitar a gestão de cursos, organização de conteúdos e automação de processos educacionais — tudo integrado ao ecossistema Google.
 
-[![Licença: CC BY-NC 4.0](https://licensebuttons.net/l/by-nc/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc/4.0/)
+![Status do Projeto](https://img.shields.io/badge/Status-Ativo-brightgreen)
+
 
 ## ✈️ Sobre o Projeto
 
@@ -41,7 +42,26 @@ O projeto foi idealizado e desenvolvido por **Vitor Krewer**, unindo tecnologia,
 
 ---
 
+## 🚀 Módulos e Projetos
+
+Abaixo está a lista de projetos contidos neste repositório. Cada módulo está em sua própria pasta e possui uma documentação detalhada com instruções de instalação e uso.
+
+---
+
+### 📄 [Emissor e Gerenciador de Certificados](./emissor-certificados-gapps/)
+
+![Status](https://img.shields.io/badge/status-conclu%C3%ADdo-brightgreen)
+
+Um sistema completo para automatizar a criação, emissão e gestão de certificados digitais. Utiliza Google Sheets, Docs e Drive para criar uma solução de baixo custo e alta eficiência para eventos, cursos e workshops.
+
+* **Tecnologias:** `Google Apps Script`, `HTML`, `Bootstrap`, `JavaScript`
+* **➡️ [Clique aqui para ver o código e as instruções de instalação detalhadas.](./emissor-certificados-gapps/README.md)**
+
+---
+
 ## 📄 Licença
+
+[![Licença: CC BY-NC 4.0](https://licensebuttons.net/l/by-nc/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 Este projeto está licenciado sob os termos da [Creative Commons Atribuição-NãoComercial 4.0 Internacional (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/).
 
