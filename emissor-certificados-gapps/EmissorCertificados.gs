@@ -1,3 +1,17 @@
+/**
+ * Cria o Menu personalizado no Google Sheets
+ */
+
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('🛠️ Emissor de Certificados')
+    .addItem('Cadastrar Instituição', 'abrirCadastroParceiro')
+    .addItem('Configurar Certificado', 'abrirEmissorCertificadoParceiro')
+    .addItem('Emitir Certificados Configurados', 'abrirEmissaoLoteSalvo')
+    .addItem('Relatório de Emissões', 'abrirRelatorioEmissoesCertificadoParceiro')
+    .addToUi();
+}
+
 // Define o ID da planilha emissora como uma constante para garantir que o script sempre acesse o arquivo correto.
 const SHEET_ID_EMISSOR_CERTIFICADOS = '[Insira o ID da sua Planilha]';
 
