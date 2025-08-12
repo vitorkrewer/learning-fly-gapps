@@ -46,16 +46,19 @@ O projeto foi idealizado e desenvolvido por **Vitor Krewer**, unindo tecnologia,
 
 Abaixo está a lista de projetos contidos neste repositório. Cada módulo está em sua própria pasta e possui uma documentação detalhada com instruções de instalação e uso.
 
----
-
 ### 📄 [Emissor e Gerenciador de Certificados](./emissor-certificados-gapps/)
 
 ![Status](https://img.shields.io/badge/status-conclu%C3%ADdo-brightgreen)
 
 Um sistema completo para automatizar a criação, emissão e gestão de certificados digitais. Utiliza Google Sheets, Docs e Drive para criar uma solução de baixo custo e alta eficiência para eventos, cursos e workshops.
-
-* **Tecnologias:** `Google Apps Script`, `HTML`, `Bootstrap`, `JavaScript`
 * **➡️ [Clique aqui para ver o código e as instruções de instalação detalhadas.](./emissor-certificados-gapps/README.md)**
+
+### ✅ [Kanban Ágil: gestor de tarefas](https://github.com/vitorkrewer/kanban-agil)
+![Status](https://img.shields.io/badge/status-ativo-brightgreen)
+
+Aplicação web full-stack que implementa um quadro Kanban funcional. O backend é construído com Google Apps Script (JavaScript/V8) e o frontend com HTML/CSS/JS, utilizando bibliotecas como Bootstrap e SortableJS. A solução demonstra o uso de Google Sheets como um banco de dados NoSQL-like, além de um sistema de autenticação via token com o CacheService do Google.
+
+* **➡️ [Clique aqui para ver o código e as instruções de instalação detalhadas.](https://github.com/vitorkrewer/kanban-agil/blob/main/docs/index.md)**
 
 ---
 
